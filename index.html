@@ -22,29 +22,82 @@
     --red: #f87171;
     --over: #ff4444;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
-    background: var(--bg);
-    color: var(--text);
+    background: var(--bg); color: var(--text);
     font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    padding: 0 0 60px;
-    overflow-x: hidden;
+    min-height: 100vh; padding: 0 0 60px; overflow-x: hidden;
   }
 
-  /* HEADER */
+  /* ── ONBOARDING ── */
+  #onboarding {
+    position: fixed; inset: 0; z-index: 300;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  #onboarding.hidden { display: none; }
+  .ob-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px; padding: 48px 40px;
+    max-width: 480px; width: 100%; text-align: center;
+    box-shadow: 0 0 80px rgba(245,200,66,0.07);
+    position: relative; overflow: hidden;
+  }
+  .ob-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(245,200,66,0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .ob-emoji { font-size: 52px; margin-bottom: 18px; display: block; }
+  .ob-card h1 {
+    font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 900;
+    color: var(--gold); margin-bottom: 10px;
+  }
+  .ob-card p { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 32px; }
+  .ob-fields { text-align: left; display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+  .ob-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 5px; display: block; }
+  .ob-input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 12px 16px; border-radius: 10px;
+    font-size: 15px; font-family: 'DM Sans', sans-serif; transition: border 0.15s;
+  }
+  .ob-input:focus { outline: none; border-color: var(--gold); }
+  .ob-row { display: flex; gap: 10px; }
+  .ob-row .ob-input { flex: 1; }
+  .template-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px;
+  }
+  .tmpl-btn {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 10px; cursor: pointer;
+    transition: all 0.15s; text-align: center;
+  }
+  .tmpl-btn:hover { border-color: rgba(245,200,66,0.4); }
+  .tmpl-btn.selected { border-color: var(--gold); background: rgba(245,200,66,0.08); }
+  .tmpl-btn .tmpl-emoji { font-size: 24px; display: block; margin-bottom: 5px; }
+  .tmpl-btn .tmpl-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .tmpl-btn .tmpl-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .btn-start {
+    width: 100%; padding: 15px; border-radius: 12px; border: none;
+    background: var(--gold); color: #1a0f3c;
+    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all 0.18s; letter-spacing: 0.3px;
+  }
+  .btn-start:hover { background: #ffd54f; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,200,66,0.25); }
+
+  /* ── APP ── */
+  #app { display: none; }
+  #app.visible { display: block; }
+
   .header {
     background: linear-gradient(135deg, #1a0f3c 0%, #2d1b69 50%, #1a0f3c 100%);
     border-bottom: 1px solid var(--border);
-    padding: 32px 24px 28px;
-    position: relative;
-    overflow: hidden;
+    padding: 28px 24px 24px; position: relative; overflow: hidden;
   }
   .header::before {
-    content: '';
-    position: absolute; inset: 0;
+    content: ''; position: absolute; inset: 0;
     background: radial-gradient(ellipse at 30% 50%, rgba(245,200,66,0.08) 0%, transparent 60%),
                 radial-gradient(ellipse at 70% 50%, rgba(168,85,247,0.08) 0%, transparent 60%);
   }
@@ -54,315 +107,320 @@
   }
   .header-left h1 {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(22px, 4vw, 34px);
-    font-weight: 900;
-    color: var(--gold);
-    text-shadow: 0 0 30px rgba(245,200,66,0.3);
-    letter-spacing: -0.5px;
+    font-size: clamp(20px, 4vw, 30px); font-weight: 900;
+    color: var(--gold); text-shadow: 0 0 30px rgba(245,200,66,0.3);
   }
-  .header-left p {
-    color: var(--muted); font-size: 13px; margin-top: 4px; font-weight: 400;
-  }
-  .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .header-left p { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .btn {
-    padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer;
-    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
-    transition: all 0.18s; display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    transition: all 0.18s; display: flex; align-items: center; gap: 5px;
   }
   .btn-gold { background: var(--gold); color: #1a0f3c; }
   .btn-gold:hover { background: #ffd54f; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,200,66,0.3); }
-  .btn-outline {
-    background: transparent; color: var(--muted); border: 1px solid var(--border);
-  }
+  .btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
   .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-danger { background: transparent; color: var(--red); border: 1px solid rgba(248,113,113,0.2); font-size: 11px; padding: 6px 12px; }
+  .btn-danger:hover { background: rgba(248,113,113,0.08); border-color: var(--red); }
 
-  /* SUMMARY CARDS */
+  /* SUMMARY */
   .summary-wrap {
-    max-width: 900px; margin: 0 auto; padding: 28px 16px 0;
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px;
+    max-width: 900px; margin: 0 auto; padding: 24px 16px 0;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;
   }
   .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px; padding: 18px 16px;
-    position: relative; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px; position: relative; overflow: hidden;
   }
-  .card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
   .card.budget::before { background: linear-gradient(90deg, var(--gold), var(--gold2)); }
   .card.spent::before { background: linear-gradient(90deg, var(--rose), var(--purple)); }
   .card.remaining::before { background: linear-gradient(90deg, var(--teal), #22d3ee); }
-  .card.items::before { background: linear-gradient(90deg, var(--purple), var(--rose)); }
-  .card-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-  .card-value { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; margin-top: 6px; }
+  .card.est::before { background: linear-gradient(90deg, var(--purple), var(--rose)); }
+  .card-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .card-value { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-top: 5px; }
   .card.budget .card-value { color: var(--gold); }
   .card.spent .card-value { color: var(--rose); }
   .card.remaining .card-value { color: var(--teal); }
-  .card.items .card-value { color: var(--purple); }
-  .card-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .card.est .card-value { color: var(--purple); }
+  .card-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
 
-  /* PROGRESS BAR */
-  .progress-wrap {
-    max-width: 900px; margin: 20px auto 0; padding: 0 16px;
-  }
-  .progress-label {
-    display: flex; justify-content: space-between; font-size: 12px; color: var(--muted);
-    margin-bottom: 8px; font-weight: 500;
-  }
-  .progress-bar {
-    height: 8px; background: var(--surface2); border-radius: 99px; overflow: hidden;
-  }
+  /* PROGRESS */
+  .progress-wrap { max-width: 900px; margin: 16px auto 0; padding: 0 16px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 7px; font-weight: 500; }
+  .progress-bar { height: 7px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
   .progress-fill {
     height: 100%; border-radius: 99px;
     background: linear-gradient(90deg, var(--gold), var(--rose));
     transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    min-width: 0;
   }
   .progress-fill.over { background: linear-gradient(90deg, var(--red), var(--over)); }
 
-  /* BUDGET LIMIT EDITOR */
+  /* BUDGET CAP EDITOR */
   .budget-edit-wrap {
-    max-width: 900px; margin: 14px auto 0; padding: 0 16px;
+    max-width: 900px; margin: 12px auto 0; padding: 0 16px;
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   }
   .budget-edit-label { font-size: 12px; color: var(--muted); font-weight: 500; }
-  .budget-edit-row { display: flex; gap: 8px; align-items: center; }
-  .budget-input {
+  .budget-cap-input {
     background: var(--surface); border: 1px solid var(--border);
-    color: var(--gold); padding: 7px 12px; border-radius: 8px;
+    color: var(--gold); padding: 6px 12px; border-radius: 8px;
     font-size: 13px; font-weight: 600; width: 100px; font-family: 'DM Sans', sans-serif;
   }
-  .budget-input:focus { outline: none; border-color: var(--gold); }
+  .budget-cap-input:focus { outline: none; border-color: var(--gold); }
 
   /* SECTIONS */
-  .sections-wrap {
-    max-width: 900px; margin: 24px auto 0; padding: 0 16px;
-    display: flex; flex-direction: column; gap: 18px;
-  }
-  .section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px; overflow: hidden;
-  }
+  .sections-wrap { max-width: 900px; margin: 20px auto 0; padding: 0 16px; display: flex; flex-direction: column; gap: 16px; }
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
   .section-header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 18px; cursor: pointer; user-select: none;
-    border-bottom: 1px solid transparent;
-    transition: background 0.15s;
+    padding: 13px 16px; cursor: pointer; user-select: none;
+    border-bottom: 1px solid transparent; transition: background 0.15s;
   }
-  .section-header:hover { background: rgba(255,255,255,0.03); }
+  .section-header:hover { background: rgba(255,255,255,0.025); }
   .section.open .section-header { border-bottom-color: var(--border); }
-  .section-left { display: flex; align-items: center; gap: 12px; }
-  .section-emoji { font-size: 20px; }
-  .section-name {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700; font-size: 16px; color: var(--text);
+  .section-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .section-emoji { font-size: 18px; flex-shrink: 0; }
+  .section-name-input {
+    font-family: 'Playfair Display', serif; font-weight: 700; font-size: 15px;
+    color: var(--text); background: transparent; border: 1px solid transparent;
+    border-radius: 5px; padding: 2px 5px; min-width: 60px; max-width: 180px;
+    transition: border 0.15s; font-size: 15px;
   }
+  .section-name-input:hover { border-color: var(--border); background: var(--surface2); }
+  .section-name-input:focus { outline: none; border-color: var(--gold); background: var(--surface2); }
   .section-badge {
-    font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 99px;
-    background: rgba(245,200,66,0.15); color: var(--gold);
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+    background: rgba(245,200,66,0.12); color: var(--gold); white-space: nowrap;
   }
-  .section-badge.over { background: rgba(248,113,113,0.15); color: var(--red); }
-  .section-right { display: flex; align-items: center; gap: 14px; }
-  .section-totals { text-align: right; }
-  .section-totals span { display: block; font-size: 12px; color: var(--muted); }
-  .section-totals strong { font-size: 14px; color: var(--gold); }
-  .chevron { color: var(--muted); transition: transform 0.25s; font-size: 12px; }
+  .section-badge.over { background: rgba(248,113,113,0.12); color: var(--red); }
+  .section-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .chevron { color: var(--muted); transition: transform 0.25s; font-size: 11px; }
   .section.open .chevron { transform: rotate(180deg); }
+  .icon-btn {
+    background: none; border: none; cursor: pointer; padding: 3px 5px;
+    border-radius: 4px; font-size: 12px; transition: background 0.15s; color: var(--muted);
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+  .icon-btn.del:hover { background: rgba(248,113,113,0.12); color: var(--red); }
 
   /* TABLE */
-  .section-body { display: none; padding: 14px 18px 18px; }
+  .section-body { display: none; padding: 12px 16px 16px; }
   .section.open .section-body { display: block; }
   table { width: 100%; border-collapse: collapse; }
   thead th {
     text-align: left; font-size: 10px; font-weight: 700; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 1px; padding: 0 10px 10px 0;
+    text-transform: uppercase; letter-spacing: 1px; padding: 0 10px 9px 0;
     border-bottom: 1px solid var(--border);
   }
-  thead th:last-child { padding-right: 0; }
   tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
   tbody tr:last-child { border-bottom: none; }
-  td { padding: 10px 10px 10px 0; vertical-align: middle; font-size: 13px; }
+  td { padding: 9px 10px 9px 0; vertical-align: middle; font-size: 13px; }
   td:last-child { padding-right: 0; }
-
-  .item-name-cell { min-width: 120px; }
   .item-name {
     font-weight: 500; color: var(--text); cursor: text;
-    padding: 4px 6px; border-radius: 5px; border: 1px solid transparent;
-    transition: border 0.15s; display: inline-block; min-width: 80px;
+    padding: 3px 6px; border-radius: 5px; border: 1px solid transparent;
+    transition: border 0.15s; display: inline-block; min-width: 70px;
   }
   .item-name:hover { border-color: var(--border); background: var(--surface2); }
   .item-name:focus { outline: none; border-color: var(--gold); background: var(--surface2); }
-
   .cell-input {
     background: transparent; border: 1px solid transparent; color: var(--text);
-    font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 4px 6px;
-    border-radius: 5px; width: 90px; transition: border 0.15s;
+    font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 3px 6px;
+    border-radius: 5px; width: 80px; transition: border 0.15s;
   }
   .cell-input:hover { border-color: var(--border); background: var(--surface2); }
   .cell-input:focus { outline: none; border-color: var(--gold); background: var(--surface2); }
   .cell-input.actual-input { color: var(--green); font-weight: 600; }
-  .cell-input.actual-input:focus { color: var(--green); }
-
   .notes-input {
     background: transparent; border: 1px solid transparent; color: var(--muted);
-    font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 4px 6px;
-    border-radius: 5px; width: 120px; transition: border 0.15s;
+    font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 3px 6px;
+    border-radius: 5px; width: 110px; transition: border 0.15s;
   }
   .notes-input:hover { border-color: var(--border); background: var(--surface2); }
   .notes-input:focus { outline: none; border-color: var(--purple); background: var(--surface2); color: var(--text); }
-
-  .range-display { font-size: 12px; color: var(--muted); white-space: nowrap; }
-
   .diff-cell { font-size: 12px; font-weight: 600; }
   .diff-cell.under { color: var(--green); }
   .diff-cell.over { color: var(--red); }
-  .diff-cell.exact { color: var(--muted); }
-
-  .row-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+  .diff-cell.neutral { color: var(--muted); }
+  .row-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s; }
   tbody tr:hover .row-actions { opacity: 1; }
-  .icon-btn {
-    background: none; border: none; cursor: pointer; padding: 3px 5px;
-    border-radius: 4px; font-size: 12px; transition: background 0.15s;
-  }
-  .icon-btn:hover { background: rgba(255,255,255,0.08); }
-  .icon-btn.del:hover { background: rgba(248,113,113,0.15); }
-
-  /* ADD ROW */
   .add-row-btn {
-    display: flex; align-items: center; gap: 6px; padding: 8px 6px;
+    display: flex; align-items: center; gap: 6px; padding: 7px 6px;
     color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer;
-    border: 1px dashed transparent; border-radius: 7px; margin-top: 10px;
-    transition: all 0.15s; width: 100%; background: none;
+    border: 1px dashed transparent; border-radius: 7px; margin-top: 8px;
+    transition: all 0.15s; width: 100%; background: none; font-family: 'DM Sans', sans-serif;
   }
   .add-row-btn:hover { border-color: var(--border); color: var(--gold); background: rgba(245,200,66,0.04); }
 
-  /* ADD CATEGORY */
-  .add-cat-wrap {
-    max-width: 900px; margin: 16px auto 0; padding: 0 16px;
-  }
+  /* ADD CAT */
+  .add-cat-wrap { max-width: 900px; margin: 14px auto 0; padding: 0 16px; }
   .add-cat-btn {
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 14px; border-radius: 14px;
+    width: 100%; padding: 13px; border-radius: 14px;
     border: 1px dashed rgba(255,200,80,0.2); background: rgba(245,200,66,0.03);
     color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer;
     transition: all 0.18s; font-family: 'DM Sans', sans-serif;
   }
-  .add-cat-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(245,200,66,0.07); }
+  .add-cat-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(245,200,66,0.06); }
 
   /* MODAL */
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-    z-index: 100; align-items: center; justify-content: center; padding: 16px;
+    z-index: 200; align-items: center; justify-content: center; padding: 16px;
   }
   .modal-overlay.open { display: flex; }
   .modal {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 18px; padding: 28px; width: 100%; max-width: 420px;
+    border-radius: 18px; padding: 28px; width: 100%; max-width: 400px;
   }
-  .modal h2 { font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 20px; font-size: 20px; }
-  .form-row { margin-bottom: 14px; }
-  .form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; display: block; }
+  .modal h2 { font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 18px; font-size: 19px; }
+  .form-row { margin-bottom: 13px; }
+  .form-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 5px; display: block; }
   .form-input {
     width: 100%; background: var(--surface2); border: 1px solid var(--border);
-    color: var(--text); padding: 10px 14px; border-radius: 8px; font-size: 14px;
+    color: var(--text); padding: 10px 13px; border-radius: 8px; font-size: 14px;
     font-family: 'DM Sans', sans-serif; transition: border 0.15s;
   }
   .form-input:focus { outline: none; border-color: var(--gold); }
-  .emoji-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .emoji-picker { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 5px; }
   .emoji-opt {
-    padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--surface2); cursor: pointer; font-size: 18px;
-    transition: all 0.15s;
+    padding: 6px 9px; border-radius: 7px; border: 1px solid var(--border);
+    background: var(--surface2); cursor: pointer; font-size: 17px; transition: all 0.15s;
   }
   .emoji-opt.selected { border-color: var(--gold); background: rgba(245,200,66,0.1); }
-  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 18px; }
 
   /* TOAST */
   .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
     background: var(--surface2); border: 1px solid var(--border);
     color: var(--text); padding: 10px 20px; border-radius: 99px;
-    font-size: 13px; font-weight: 500; z-index: 200;
+    font-size: 13px; font-weight: 500; z-index: 400; white-space: nowrap;
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    white-space: nowrap;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  .section-name-input {
-    font-family: 'Playfair Display', serif; font-weight: 700;
-    font-size: 16px; color: var(--text); background: transparent;
-    border: 1px solid transparent; border-radius: 5px; padding: 2px 6px;
-    width: 160px; cursor: text; transition: border 0.15s;
+  /* SAVE INDICATOR */
+  .save-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+    display: inline-block; margin-right: 4px; opacity: 0; transition: opacity 0.3s;
   }
-  .section-name-input:hover { border-color: var(--border); background: var(--surface2); }
-  .section-name-input:focus { outline: none; border-color: var(--gold); background: var(--surface2); }
+  .save-dot.visible { opacity: 1; }
 
-  @media (max-width: 600px) {
+  @media (max-width: 580px) {
     .notes-input { display: none; }
-    .cell-input { width: 70px; }
+    .cell-input { width: 60px; }
+    .ob-card { padding: 32px 20px; }
+    .template-grid { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-inner">
-    <div class="header-left">
-      <h1>🎉 Party Budget Tracker</h1>
-      <p id="party-subtitle">30th Anniversary Celebration — Edit any field to update live</p>
+<!-- ══ ONBOARDING ══ -->
+<div id="onboarding">
+  <div class="ob-card">
+    <span class="ob-emoji">🎉</span>
+    <h1>Party Budget Tracker</h1>
+    <p>Plan your event, track quotes as they come in,<br>and never go over budget. Your data saves automatically.</p>
+
+    <div class="ob-fields">
+      <div>
+        <label class="ob-label">What's the occasion?</label>
+        <input type="text" class="ob-input" id="ob-title" placeholder="e.g. Sarah's Sweet 16, Wedding Reception…">
+      </div>
+      <div>
+        <label class="ob-label">Your total budget</label>
+        <input type="number" class="ob-input" id="ob-budget" placeholder="e.g. 2000" value="">
+      </div>
     </div>
-    <div class="header-actions">
-      <button class="btn btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
-      <button class="btn btn-gold" onclick="openAddCat()">+ Category</button>
+
+    <label class="ob-label" style="text-align:left;display:block;margin-bottom:10px;">Start with a template</label>
+    <div class="template-grid">
+      <div class="tmpl-btn selected" data-tmpl="birthday" onclick="selectTmpl(this)">
+        <span class="tmpl-emoji">🎂</span>
+        <div class="tmpl-name">Birthday Party</div>
+        <div class="tmpl-desc">Cake, venue, decor</div>
+      </div>
+      <div class="tmpl-btn" data-tmpl="wedding" onclick="selectTmpl(this)">
+        <span class="tmpl-emoji">💍</span>
+        <div class="tmpl-name">Wedding / Reception</div>
+        <div class="tmpl-desc">Catering, flowers, DJ</div>
+      </div>
+      <div class="tmpl-btn" data-tmpl="outdoor" onclick="selectTmpl(this)">
+        <span class="tmpl-emoji">🏕️</span>
+        <div class="tmpl-name">Outdoor / Backyard</div>
+        <div class="tmpl-desc">Tent, rentals, food</div>
+      </div>
+      <div class="tmpl-btn" data-tmpl="blank" onclick="selectTmpl(this)">
+        <span class="tmpl-emoji">📋</span>
+        <div class="tmpl-name">Blank</div>
+        <div class="tmpl-desc">Start from scratch</div>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startApp()">Create My Tracker →</button>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <h1 id="app-title">🎉 Party Budget Tracker</h1>
+        <p><span class="save-dot" id="save-dot"></span><span id="save-label">All changes saved to your browser</span></p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-danger" onclick="resetAll()" title="Start over">↩ Reset</button>
+        <button class="btn btn-outline" onclick="exportCSV()">⬇ CSV</button>
+        <button class="btn btn-gold" onclick="openAddCat()">+ Category</button>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="summary-wrap">
-  <div class="card budget">
-    <div class="card-label">Total Budget</div>
-    <div class="card-value" id="total-budget-display">$0</div>
-    <div class="card-sub">Set your limit below</div>
+  <div class="summary-wrap">
+    <div class="card budget">
+      <div class="card-label">Budget Cap</div>
+      <div class="card-value" id="total-budget-display">$0</div>
+      <div class="card-sub">Your limit</div>
+    </div>
+    <div class="card spent">
+      <div class="card-label">Confirmed Spend</div>
+      <div class="card-value" id="total-actual">$0</div>
+      <div class="card-sub">Actual costs logged</div>
+    </div>
+    <div class="card remaining">
+      <div class="card-label">Remaining</div>
+      <div class="card-value" id="total-remaining">$0</div>
+      <div class="card-sub">Budget left</div>
+    </div>
+    <div class="card est">
+      <div class="card-label">Estimated Range</div>
+      <div class="card-value" id="total-est">$0</div>
+      <div class="card-sub">Low – High</div>
+    </div>
   </div>
-  <div class="card spent">
-    <div class="card-label">Actual Spent</div>
-    <div class="card-value" id="total-actual">$0</div>
-    <div class="card-sub">Confirmed costs</div>
-  </div>
-  <div class="card remaining">
-    <div class="card-label">Remaining</div>
-    <div class="card-value" id="total-remaining">$0</div>
-    <div class="card-sub">Budget left</div>
-  </div>
-  <div class="card items">
-    <div class="card-label">Est. Total</div>
-    <div class="card-value" id="total-est">$0</div>
-    <div class="card-sub">Estimated cost</div>
-  </div>
-</div>
 
-<div class="progress-wrap">
-  <div class="progress-label">
-    <span>Budget Usage</span>
-    <span id="progress-pct">0%</span>
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Spend vs Budget</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-</div>
 
-<div class="budget-edit-wrap">
-  <span class="budget-edit-label">🎯 Total Budget Cap:</span>
-  <div class="budget-edit-row">
-    <input type="number" class="budget-input" id="budget-cap" value="2000" onchange="refreshSummary()">
-    <button class="btn btn-outline" onclick="refreshSummary()" style="padding:7px 12px;">Update</button>
+  <div class="budget-edit-wrap">
+    <span class="budget-edit-label">🎯 Budget Cap:</span>
+    <input type="number" class="budget-cap-input" id="budget-cap" value="2000" oninput="onBudgetCapChange()">
   </div>
-</div>
 
-<div class="sections-wrap" id="sections-wrap"></div>
-
-<div class="add-cat-wrap">
-  <button class="add-cat-btn" onclick="openAddCat()">＋ Add New Category</button>
+  <div class="sections-wrap" id="sections-wrap"></div>
+  <div class="add-cat-wrap">
+    <button class="add-cat-btn" onclick="openAddCat()">＋ Add New Category</button>
+  </div>
 </div>
 
 <!-- ADD CATEGORY MODAL -->
@@ -370,12 +428,12 @@
   <div class="modal">
     <h2>Add Category</h2>
     <div class="form-row">
-      <label class="form-label">Category Name</label>
+      <label class="form-label">Name</label>
       <input type="text" class="form-input" id="new-cat-name" placeholder="e.g. Photography">
     </div>
     <div class="form-row">
       <label class="form-label">Icon</label>
-      <div class="emoji-picker">
+      <div class="emoji-picker" id="emoji-picker">
         <span class="emoji-opt selected" data-emoji="🎈">🎈</span>
         <span class="emoji-opt" data-emoji="🎵">🎵</span>
         <span class="emoji-opt" data-emoji="🌸">🌸</span>
@@ -386,6 +444,8 @@
         <span class="emoji-opt" data-emoji="🧾">🧾</span>
         <span class="emoji-opt" data-emoji="🍹">🍹</span>
         <span class="emoji-opt" data-emoji="💐">💐</span>
+        <span class="emoji-opt" data-emoji="🎂">🎂</span>
+        <span class="emoji-opt" data-emoji="🍽️">🍽️</span>
       </div>
     </div>
     <div class="modal-actions">
@@ -398,90 +458,203 @@
 <div class="toast" id="toast"></div>
 
 <script>
-let data = {
-  categories: [
-    {
-      id: 'food', emoji: '🍛', name: 'Food (Catering)',
-      items: [
-        { id: 'i1', name: 'Indian Food Catering', estLow: 800, estHigh: 1050, actual: '', notes: '2 apps, 2 mains, dal, rice, naan, dessert' },
-        { id: 'i2', name: 'Serving Trays', estLow: 10, estHigh: 20, actual: '', notes: 'Foil trays backup' },
-      ]
-    },
-    {
-      id: 'cake', emoji: '🎂', name: 'Cake',
-      items: [
-        { id: 'i3', name: 'Eggless Cake (50-60 servings)', estLow: 200, estHigh: 300, actual: '', notes: '' },
-        { id: 'i4', name: 'Cake Topper "30 years"', estLow: 10, estHigh: 15, actual: '', notes: 'Optional' },
-      ]
-    },
-    {
-      id: 'rentals', emoji: '🏕️', name: 'Rentals',
-      items: [
-        { id: 'i5', name: 'Tent (15x20 or 20x20)', estLow: 450, estHigh: 575, actual: '', notes: 'Weather + seating zone' },
-        { id: 'i6', name: 'Chairs (35–45)', estLow: 70, estHigh: 100, actual: '', notes: '' },
-        { id: 'i7', name: 'Tables (4–6)', estLow: 40, estHigh: 80, actual: '', notes: '' },
-        { id: 'i8', name: 'String Lighting', estLow: 25, estHigh: 25, actual: '', notes: 'If not included' },
-      ]
-    },
-    {
-      id: 'decor', emoji: '✨', name: 'Decor',
-      items: [
-        { id: 'i9', name: 'Backdrop Stand', estLow: 20, estHigh: 30, actual: '', notes: '6–6.6 ft' },
-        { id: 'i10', name: 'Backdrop Banner', estLow: 10, estHigh: 20, actual: '', notes: 'Anniversary' },
-        { id: 'i11', name: 'Gold Shimmer Curtain', estLow: 10, estHigh: 15, actual: '', notes: 'Backdrop' },
-        { id: 'i12', name: 'Curtain Lights (warm)', estLow: 10, estHigh: 20, actual: '', notes: 'Backdrop/fence' },
-        { id: 'i13', name: 'Marigold Garlands', estLow: 15, estHigh: 25, actual: '', notes: 'Indian touch' },
-        { id: 'i14', name: 'Outdoor String Lights', estLow: 30, estHigh: 60, actual: '', notes: 'Main lighting' },
-      ]
-    },
-    {
-      id: 'supplies', emoji: '🍽️', name: 'Party Supplies',
-      items: [
-        { id: 'i15', name: 'Plates (heavy duty ~60 ppl)', estLow: 20, estHigh: 30, actual: '', notes: '' },
-        { id: 'i16', name: 'Bowls (for curry)', estLow: 10, estHigh: 20, actual: '', notes: '' },
-        { id: 'i17', name: 'Napkins (bulk)', estLow: 10, estHigh: 10, actual: '', notes: '' },
-        { id: 'i18', name: 'Cutlery (forks/spoons)', estLow: 15, estHigh: 20, actual: '', notes: '' },
-        { id: 'i19', name: 'Cups (water + soda)', estLow: 10, estHigh: 20, actual: '', notes: '' },
-        { id: 'i20', name: 'Serving Spoons/Tongs', estLow: 10, estHigh: 20, actual: '', notes: '' },
-        { id: 'i21', name: 'Trash Bags', estLow: 10, estHigh: 10, actual: '', notes: 'Cleanup' },
-        { id: 'i22', name: 'Paper Towels', estLow: 10, estHigh: 10, actual: '', notes: 'Cleaning' },
-      ]
-    },
-    {
-      id: 'drinks', emoji: '🧊', name: 'Drinks + Ice',
-      items: [
-        { id: 'i23', name: 'Water Bottles (bulk)', estLow: 15, estHigh: 25, actual: '', notes: '' },
-        { id: 'i24', name: 'Soda / Juice variety', estLow: 30, estHigh: 50, actual: '', notes: '' },
-        { id: 'i25', name: 'Ice (coolers)', estLow: 10, estHigh: 20, actual: '', notes: '' },
-        { id: 'i26', name: 'Coolers', estLow: 0, estHigh: 50, actual: '', notes: 'Borrow or buy' },
-      ]
-    },
-    {
-      id: 'sound', emoji: '🔊', name: 'Sound (Optional)',
-      items: [
-        { id: 'i27', name: 'Speaker', estLow: 0, estHigh: 50, actual: '', notes: 'Try to borrow → $0' },
-        { id: 'i28', name: 'Mic', estLow: 0, estHigh: 50, actual: '', notes: 'Only if needed' },
-      ]
-    },
-    {
-      id: 'misc', emoji: '🧾', name: 'Misc / Buffer',
-      items: [
-        { id: 'i29', name: 'Last-minute runs', estLow: 100, estHigh: 200, actual: '', notes: 'Target/Costco' },
-      ]
-    },
-  ]
+// ── STORAGE KEY ──
+const STORAGE_KEY = 'party_budget_v2';
+
+// ── TEMPLATES ──
+const TEMPLATES = {
+  birthday: {
+    categories: [
+      { id:'venue', emoji:'🏠', name:'Venue', items:[
+        { id:'v1', name:'Venue rental', estLow:200, estHigh:500, actual:'', notes:'' },
+        { id:'v2', name:'Parking / valet', estLow:0, estHigh:100, actual:'', notes:'' },
+      ]},
+      { id:'food', emoji:'🍽️', name:'Food & Catering', items:[
+        { id:'f1', name:'Catering / food', estLow:300, estHigh:600, actual:'', notes:'' },
+        { id:'f2', name:'Serving ware', estLow:20, estHigh:50, actual:'', notes:'' },
+      ]},
+      { id:'cake', emoji:'🎂', name:'Cake', items:[
+        { id:'c1', name:'Birthday cake', estLow:80, estHigh:200, actual:'', notes:'' },
+        { id:'c2', name:'Cake topper', estLow:10, estHigh:20, actual:'', notes:'Optional' },
+      ]},
+      { id:'decor', emoji:'✨', name:'Decorations', items:[
+        { id:'d1', name:'Balloons & backdrop', estLow:30, estHigh:80, actual:'', notes:'' },
+        { id:'d2', name:'Table centerpieces', estLow:20, estHigh:60, actual:'', notes:'' },
+        { id:'d3', name:'Lighting', estLow:15, estHigh:50, actual:'', notes:'' },
+      ]},
+      { id:'drinks', emoji:'🥂', name:'Drinks', items:[
+        { id:'dr1', name:'Beverages (non-alc)', estLow:30, estHigh:60, actual:'', notes:'' },
+        { id:'dr2', name:'Ice & coolers', estLow:10, estHigh:30, actual:'', notes:'' },
+      ]},
+      { id:'supplies', emoji:'🧻', name:'Party Supplies', items:[
+        { id:'s1', name:'Plates, cups, cutlery', estLow:20, estHigh:50, actual:'', notes:'' },
+        { id:'s2', name:'Napkins & trash bags', estLow:10, estHigh:20, actual:'', notes:'' },
+      ]},
+      { id:'misc', emoji:'🧾', name:'Misc / Buffer', items:[
+        { id:'m1', name:'Last-minute expenses', estLow:50, estHigh:150, actual:'', notes:'' },
+      ]},
+    ]
+  },
+  wedding: {
+    categories: [
+      { id:'venue', emoji:'🏛️', name:'Venue', items:[
+        { id:'v1', name:'Ceremony venue', estLow:1000, estHigh:3000, actual:'', notes:'' },
+        { id:'v2', name:'Reception hall', estLow:1500, estHigh:4000, actual:'', notes:'' },
+      ]},
+      { id:'catering', emoji:'🍽️', name:'Catering', items:[
+        { id:'c1', name:'Dinner per head', estLow:50, estHigh:120, actual:'', notes:'× number of guests' },
+        { id:'c2', name:'Wedding cake', estLow:300, estHigh:800, actual:'', notes:'' },
+        { id:'c3', name:'Bar / drinks', estLow:500, estHigh:1500, actual:'', notes:'' },
+      ]},
+      { id:'flowers', emoji:'💐', name:'Flowers & Decor', items:[
+        { id:'fl1', name:'Bridal bouquet', estLow:150, estHigh:350, actual:'', notes:'' },
+        { id:'fl2', name:'Table centerpieces', estLow:200, estHigh:600, actual:'', notes:'' },
+        { id:'fl3', name:'Ceremony arch / decor', estLow:300, estHigh:800, actual:'', notes:'' },
+      ]},
+      { id:'music', emoji:'🎵', name:'Music / Entertainment', items:[
+        { id:'m1', name:'DJ or band', estLow:500, estHigh:2000, actual:'', notes:'' },
+        { id:'m2', name:'Sound system', estLow:0, estHigh:300, actual:'', notes:'Often included' },
+      ]},
+      { id:'photo', emoji:'📸', name:'Photography', items:[
+        { id:'p1', name:'Photographer', estLow:1000, estHigh:3000, actual:'', notes:'' },
+        { id:'p2', name:'Videographer', estLow:800, estHigh:2500, actual:'', notes:'Optional' },
+      ]},
+      { id:'misc', emoji:'🧾', name:'Misc / Buffer', items:[
+        { id:'mi1', name:'Stationery & invites', estLow:100, estHigh:300, actual:'', notes:'' },
+        { id:'mi2', name:'Transportation', estLow:100, estHigh:400, actual:'', notes:'' },
+        { id:'mi3', name:'Contingency fund', estLow:200, estHigh:500, actual:'', notes:'' },
+      ]},
+    ]
+  },
+  outdoor: {
+    categories: [
+      { id:'rentals', emoji:'🏕️', name:'Rentals', items:[
+        { id:'r1', name:'Tent', estLow:300, estHigh:700, actual:'', notes:'Size depends on guest count' },
+        { id:'r2', name:'Chairs', estLow:50, estHigh:120, actual:'', notes:'' },
+        { id:'r3', name:'Tables', estLow:40, estHigh:100, actual:'', notes:'' },
+        { id:'r4', name:'String lights', estLow:20, estHigh:60, actual:'', notes:'' },
+      ]},
+      { id:'food', emoji:'🍛', name:'Food & Catering', items:[
+        { id:'f1', name:'Catering', estLow:400, estHigh:900, actual:'', notes:'' },
+        { id:'f2', name:'Serving trays/ware', estLow:15, estHigh:40, actual:'', notes:'' },
+      ]},
+      { id:'cake', emoji:'🎂', name:'Cake', items:[
+        { id:'c1', name:'Cake', estLow:100, estHigh:300, actual:'', notes:'' },
+      ]},
+      { id:'decor', emoji:'✨', name:'Decor', items:[
+        { id:'d1', name:'Backdrop', estLow:30, estHigh:60, actual:'', notes:'' },
+        { id:'d2', name:'Garlands / flowers', estLow:20, estHigh:50, actual:'', notes:'' },
+        { id:'d3', name:'Outdoor string lights', estLow:25, estHigh:70, actual:'', notes:'' },
+      ]},
+      { id:'drinks', emoji:'🧊', name:'Drinks + Ice', items:[
+        { id:'dr1', name:'Water + soda + juice', estLow:40, estHigh:80, actual:'', notes:'' },
+        { id:'dr2', name:'Ice', estLow:10, estHigh:25, actual:'', notes:'' },
+        { id:'dr3', name:'Coolers', estLow:0, estHigh:60, actual:'', notes:'Borrow if possible' },
+      ]},
+      { id:'supplies', emoji:'🍽️', name:'Party Supplies', items:[
+        { id:'s1', name:'Plates, bowls, cutlery', estLow:25, estHigh:60, actual:'', notes:'' },
+        { id:'s2', name:'Cups & napkins', estLow:10, estHigh:25, actual:'', notes:'' },
+        { id:'s3', name:'Trash bags & paper towels', estLow:10, estHigh:20, actual:'', notes:'' },
+      ]},
+      { id:'sound', emoji:'🔊', name:'Sound', items:[
+        { id:'so1', name:'Speaker', estLow:0, estHigh:60, actual:'', notes:'Try to borrow' },
+      ]},
+      { id:'misc', emoji:'🧾', name:'Misc / Buffer', items:[
+        { id:'m1', name:'Last-minute runs', estLow:75, estHigh:200, actual:'', notes:'' },
+      ]},
+    ]
+  },
+  blank: {
+    categories: [
+      { id:'cat1', emoji:'🎈', name:'Category 1', items:[
+        { id:'i1', name:'Item', estLow:0, estHigh:0, actual:'', notes:'' },
+      ]},
+    ]
+  }
 };
 
-let nextId = 100;
-const fmt = v => v === '' || v === null || v === undefined ? '—' : '$' + Number(v).toLocaleString();
-const fmtNum = v => v === '' || isNaN(v) ? 0 : Number(v);
+// ── STATE ──
+let state = null; // loaded from localStorage or built fresh
+let nextId = 1000;
+let saveTimer = null;
+let selectedTemplate = 'birthday';
+let selectedEmoji = '🎈';
 
+// ── UTILS ──
+const fmt = v => (v === '' || v === null || v === undefined || isNaN(v)) ? '—' : '$' + Number(v).toLocaleString();
+const fmtNum = v => (v === '' || v === null || isNaN(v)) ? 0 : Number(v);
+
+// ── ONBOARDING ──
+function selectTmpl(el) {
+  document.querySelectorAll('.tmpl-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTemplate = el.dataset.tmpl;
+}
+
+function startApp() {
+  const title = document.getElementById('ob-title').value.trim() || 'My Party';
+  const budget = fmtNum(document.getElementById('ob-budget').value) || 1500;
+  const tmpl = TEMPLATES[selectedTemplate];
+
+  state = {
+    title,
+    budgetCap: budget,
+    categories: JSON.parse(JSON.stringify(tmpl.categories))
+  };
+  saveState();
+  launchApp();
+}
+
+// ── LAUNCH / LOAD ──
+function init() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      state = JSON.parse(saved);
+      launchApp();
+      return;
+    } catch(e) {}
+  }
+  // No saved data → show onboarding
+  document.getElementById('onboarding').classList.remove('hidden');
+}
+
+function launchApp() {
+  document.getElementById('onboarding').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('app-title').textContent = '🎉 ' + state.title;
+  document.getElementById('budget-cap').value = state.budgetCap;
+  render();
+}
+
+// ── SAVE ──
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  flashSave();
+}
+
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveState, 600);
+}
+
+function flashSave() {
+  const dot = document.getElementById('save-dot');
+  dot.classList.add('visible');
+  setTimeout(() => dot.classList.remove('visible'), 1500);
+}
+
+function resetAll() {
+  if (!confirm('Clear all your data and start over?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+// ── RENDER ──
 function render() {
   const wrap = document.getElementById('sections-wrap');
   wrap.innerHTML = '';
-  data.categories.forEach(cat => {
-    wrap.appendChild(buildSection(cat));
-  });
+  state.categories.forEach(cat => wrap.appendChild(buildSection(cat)));
   refreshSummary();
 }
 
@@ -493,100 +666,82 @@ function buildSection(cat) {
   const totals = getCatTotals(cat);
 
   div.innerHTML = `
-    <div class="section-header" onclick="toggleSection('${cat.id}')">
+    <div class="section-header" id="hdr-${cat.id}">
       <div class="section-left">
-        <span class="section-emoji">${cat.emoji}</span>
-        <input class="section-name-input" value="${cat.name}" onclick="e=>e.stopPropagation()"
-          onchange="updateCatName('${cat.id}', this.value)" onfocus="this.parentElement.parentElement.parentElement.querySelector('.section-header').onclick=null"
-          onblur="reattachToggle('${cat.id}')">
-        <span class="section-badge ${totals.over ? 'over' : ''}">
-          ${totals.actual > 0 ? fmt(totals.actual) + ' spent' : 'Est. ' + fmt(totals.estLow) + '–' + fmt(totals.estHigh)}
+        <span class="section-emoji" style="cursor:pointer" onclick="pickEmoji(event,'${cat.id}')" title="Change icon">${cat.emoji}</span>
+        <input class="section-name-input" value="${escHtml(cat.name)}"
+          onchange="updateCatName('${cat.id}',this.value)"
+          onclick="event.stopPropagation()"
+          onfocus="event.stopPropagation()">
+        <span class="section-badge ${totals.over ? 'over' : ''}" id="badge-${cat.id}">
+          ${badgeText(totals)}
         </span>
       </div>
       <div class="section-right">
-        <div class="section-totals">
-          <span>${cat.items.length} items</span>
-        </div>
+        <button class="icon-btn del" onclick="event.stopPropagation();deleteCategory('${cat.id}')" title="Delete category">🗑</button>
         <span class="chevron">▼</span>
-        <button class="icon-btn del" onclick="event.stopPropagation();deleteCategory('${cat.id}')" title="Remove category">🗑</button>
       </div>
     </div>
     <div class="section-body">
       <table>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Est. Range</th>
-            <th>Actual $</th>
-            <th>Diff</th>
-            <th>Notes</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="tbody-${cat.id}">
-        </tbody>
+        <thead><tr>
+          <th>Item</th><th>Est. Low</th><th>Est. High</th><th>Actual $</th><th>Diff</th><th class="notes-col">Notes</th><th></th>
+        </tr></thead>
+        <tbody id="tbody-${cat.id}"></tbody>
       </table>
       <button class="add-row-btn" onclick="addItem('${cat.id}')">＋ Add item</button>
     </div>
   `;
 
-  const tbody = div.querySelector('#tbody-' + cat.id);
-  cat.items.forEach(item => {
-    tbody.appendChild(buildRow(cat.id, item));
+  // toggle on header click (but not on inputs)
+  div.querySelector('#hdr-' + cat.id).addEventListener('click', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+    div.classList.toggle('open');
   });
 
+  const tbody = div.querySelector('#tbody-' + cat.id);
+  cat.items.forEach(item => tbody.appendChild(buildRow(cat.id, item)));
   return div;
 }
 
-function reattachToggle(catId) {
-  const sec = document.getElementById('sec-' + catId);
-  if (sec) sec.querySelector('.section-header').onclick = () => toggleSection(catId);
+function badgeText(t) {
+  if (t.actual > 0) return fmt(t.actual) + ' spent';
+  if (t.estHigh > 0) return fmt(t.estLow) + ' – ' + fmt(t.estHigh);
+  return 'No estimates yet';
 }
 
 function buildRow(catId, item) {
   const tr = document.createElement('tr');
-  const midEst = item.estLow === item.estHigh ? item.estLow : Math.round((item.estLow + item.estHigh) / 2);
+  const midEst = item.estHigh > 0 ? Math.round((fmtNum(item.estLow) + fmtNum(item.estHigh)) / 2) : 0;
   const actual = fmtNum(item.actual);
-  const diff = item.actual !== '' ? actual - midEst : null;
+  const diff = item.actual !== '' && midEst > 0 ? actual - midEst : null;
   const diffHtml = diff !== null
-    ? `<span class="diff-cell ${diff < 0 ? 'under' : diff > 0 ? 'over' : 'exact'}">${diff < 0 ? '▼ ' + fmt(Math.abs(diff)) : diff > 0 ? '▲ ' + fmt(diff) : '—'}</span>`
-    : '<span class="diff-cell exact">—</span>';
+    ? `<span class="diff-cell ${diff < 0 ? 'under' : diff > 0 ? 'over' : 'neutral'}">${diff < 0 ? '▼ '+fmt(Math.abs(diff)) : diff > 0 ? '▲ '+fmt(diff) : '—'}</span>`
+    : '<span class="diff-cell neutral">—</span>';
 
   tr.innerHTML = `
-    <td class="item-name-cell">
-      <span class="item-name" contenteditable="true"
-        onblur="updateItem('${catId}','${item.id}','name',this.innerText)"
-        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${item.name}</span>
-    </td>
-    <td>
-      <span class="range-display">
-        $<input type="number" class="cell-input" style="width:58px" value="${item.estLow}"
-          onchange="updateItem('${catId}','${item.id}','estLow',this.value)">
-        –
-        $<input type="number" class="cell-input" style="width:58px" value="${item.estHigh}"
-          onchange="updateItem('${catId}','${item.id}','estHigh',this.value)">
-      </span>
-    </td>
-    <td>
-      <input type="number" class="cell-input actual-input" placeholder="—"
-        value="${item.actual}"
-        onchange="updateItem('${catId}','${item.id}','actual',this.value)">
-    </td>
+    <td><span class="item-name" contenteditable="true"
+      onblur="updateItem('${catId}','${item.id}','name',this.innerText)"
+      onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${escHtml(item.name)}</span></td>
+    <td><input type="number" class="cell-input" value="${item.estLow}" placeholder="0"
+      oninput="updateItem('${catId}','${item.id}','estLow',this.value)"></td>
+    <td><input type="number" class="cell-input" value="${item.estHigh}" placeholder="0"
+      oninput="updateItem('${catId}','${item.id}','estHigh',this.value)"></td>
+    <td><input type="number" class="cell-input actual-input" value="${item.actual}" placeholder="—"
+      oninput="updateItem('${catId}','${item.id}','actual',this.value)"></td>
     <td>${diffHtml}</td>
-    <td>
-      <input type="text" class="notes-input" placeholder="Notes..."
-        value="${item.notes}"
-        onchange="updateItem('${catId}','${item.id}','notes',this.value)">
-    </td>
-    <td>
-      <div class="row-actions">
-        <button class="icon-btn del" onclick="deleteItem('${catId}','${item.id}')" title="Delete">✕</button>
-      </div>
-    </td>
+    <td><input type="text" class="notes-input" value="${escHtml(item.notes)}" placeholder="Notes…"
+      oninput="updateItem('${catId}','${item.id}','notes',this.value)"></td>
+    <td><div class="row-actions"><button class="icon-btn del" onclick="deleteItem('${catId}','${item.id}')">✕</button></div></td>
   `;
   return tr;
 }
 
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── SUMMARY ──
 function getCatTotals(cat) {
   let estLow = 0, estHigh = 0, actual = 0;
   cat.items.forEach(item => {
@@ -594,108 +749,151 @@ function getCatTotals(cat) {
     estHigh += fmtNum(item.estHigh);
     if (item.actual !== '') actual += fmtNum(item.actual);
   });
-  const midEst = Math.round((estLow + estHigh) / 2);
-  return { estLow, estHigh, actual, over: actual > estHigh && actual > 0 };
+  return { estLow, estHigh, actual, over: actual > estHigh && actual > 0 && estHigh > 0 };
 }
 
 function refreshSummary() {
   let totalEstLow = 0, totalEstHigh = 0, totalActual = 0;
-  data.categories.forEach(cat => {
+  state.categories.forEach(cat => {
     const t = getCatTotals(cat);
     totalEstLow += t.estLow;
     totalEstHigh += t.estHigh;
     totalActual += t.actual;
   });
 
-  const cap = fmtNum(document.getElementById('budget-cap').value) || 2000;
+  const cap = state.budgetCap;
   const remaining = cap - totalActual;
-  const midEst = Math.round((totalEstLow + totalEstHigh) / 2);
   const pct = cap > 0 ? Math.min(Math.round(totalActual / cap * 100), 100) : 0;
 
   document.getElementById('total-budget-display').textContent = fmt(cap);
   document.getElementById('total-actual').textContent = totalActual > 0 ? fmt(totalActual) : '$0';
   document.getElementById('total-remaining').textContent = fmt(remaining);
-  document.getElementById('total-est').textContent = fmt(totalEstLow) + '–' + fmt(totalEstHigh);
+  document.getElementById('total-est').textContent = fmt(totalEstLow) + ' – ' + fmt(totalEstHigh);
   document.getElementById('progress-fill').style.width = pct + '%';
   document.getElementById('progress-fill').className = 'progress-fill' + (remaining < 0 ? ' over' : '');
   document.getElementById('progress-pct').textContent = pct + '%';
-
-  const remEl = document.getElementById('total-remaining');
-  remEl.style.color = remaining < 0 ? 'var(--red)' : 'var(--teal)';
+  document.getElementById('total-remaining').style.color = remaining < 0 ? 'var(--red)' : 'var(--teal)';
 }
 
-function toggleSection(catId) {
-  const sec = document.getElementById('sec-' + catId);
-  if (sec) sec.classList.toggle('open');
-}
-
+// ── MUTATIONS ──
 function updateCatName(catId, val) {
-  const cat = data.categories.find(c => c.id === catId);
-  if (cat) cat.name = val;
+  const cat = state.categories.find(c => c.id === catId);
+  if (cat) { cat.name = val; scheduleSave(); }
 }
 
 function updateItem(catId, itemId, field, value) {
-  const cat = data.categories.find(c => c.id === catId);
+  const cat = state.categories.find(c => c.id === catId);
   if (!cat) return;
   const item = cat.items.find(i => i.id === itemId);
   if (!item) return;
-  item[field] = field === 'name' || field === 'notes' ? value : value;
-  // Re-render just the section badge + summary
-  const sec = document.getElementById('sec-' + catId);
-  if (sec) {
-    const totals = getCatTotals(cat);
-    const badge = sec.querySelector('.section-badge');
-    if (badge) {
-      badge.className = 'section-badge' + (totals.over ? ' over' : '');
-      badge.textContent = totals.actual > 0
-        ? fmt(totals.actual) + ' spent'
-        : 'Est. ' + fmt(totals.estLow) + '–' + fmt(totals.estHigh);
-    }
+  item[field] = value;
+
+  // update badge
+  const totals = getCatTotals(cat);
+  const badge = document.getElementById('badge-' + catId);
+  if (badge) {
+    badge.className = 'section-badge' + (totals.over ? ' over' : '');
+    badge.textContent = badgeText(totals);
+  }
+  // re-render diff cell
+  const tbody = document.getElementById('tbody-' + catId);
+  if (tbody && (field === 'actual' || field === 'estLow' || field === 'estHigh')) {
+    const rows = tbody.querySelectorAll('tr');
+    rows.forEach(row => {
+      if (row.innerHTML.includes(`'${itemId}'`)) {
+        const midEst = Math.round((fmtNum(item.estLow) + fmtNum(item.estHigh)) / 2);
+        const actual = fmtNum(item.actual);
+        const diff = item.actual !== '' && midEst > 0 ? actual - midEst : null;
+        const diffCell = row.querySelectorAll('td')[4];
+        if (diffCell) {
+          diffCell.innerHTML = diff !== null
+            ? `<span class="diff-cell ${diff < 0 ? 'under' : diff > 0 ? 'over' : 'neutral'}">${diff < 0 ? '▼ '+fmt(Math.abs(diff)) : diff > 0 ? '▲ '+fmt(diff) : '—'}</span>`
+            : '<span class="diff-cell neutral">—</span>';
+        }
+      }
+    });
   }
   refreshSummary();
+  scheduleSave();
+}
+
+function onBudgetCapChange() {
+  state.budgetCap = fmtNum(document.getElementById('budget-cap').value);
+  refreshSummary();
+  scheduleSave();
 }
 
 function addItem(catId) {
-  const cat = data.categories.find(c => c.id === catId);
+  const cat = state.categories.find(c => c.id === catId);
   if (!cat) return;
   const newItem = { id: 'i' + (nextId++), name: 'New Item', estLow: 0, estHigh: 0, actual: '', notes: '' };
   cat.items.push(newItem);
   const tbody = document.getElementById('tbody-' + catId);
   if (tbody) tbody.appendChild(buildRow(catId, newItem));
   refreshSummary();
-  toast('Item added ✓');
+  scheduleSave();
+  // focus the new name
+  setTimeout(() => {
+    const names = tbody.querySelectorAll('.item-name');
+    if (names.length) names[names.length - 1].focus();
+  }, 50);
 }
 
 function deleteItem(catId, itemId) {
-  const cat = data.categories.find(c => c.id === catId);
+  const cat = state.categories.find(c => c.id === catId);
   if (!cat) return;
   cat.items = cat.items.filter(i => i.id !== itemId);
-  const tbody = document.getElementById('tbody-' + catId);
-  if (tbody) {
-    // Find and remove the row
-    const rows = tbody.querySelectorAll('tr');
-    rows.forEach(row => {
-      if (row.innerHTML.includes(`'${itemId}'`)) row.remove();
-    });
-  }
-  refreshSummary();
+  render();
+  scheduleSave();
 }
 
 function deleteCategory(catId) {
   if (!confirm('Remove this category?')) return;
-  data.categories = data.categories.filter(c => c.id !== catId);
-  const sec = document.getElementById('sec-' + catId);
-  if (sec) sec.remove();
-  refreshSummary();
+  state.categories = state.categories.filter(c => c.id !== catId);
+  render();
+  scheduleSave();
   toast('Category removed');
 }
 
-// ADD CATEGORY
-let selectedEmoji = '🎈';
+// ── EMOJI PICKER FOR CATEGORY ──
+function pickEmoji(e, catId) {
+  e.stopPropagation();
+  const emojis = ['🎈','🎂','🍽️','✨','🏠','💐','🎵','📸','🥂','🧊','🔊','🎁','🎯','🧾','🚗','🌸','🏕️','🍛','💍','🛋️'];
+  const picker = document.createElement('div');
+  picker.style.cssText = `position:fixed;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-wrap:wrap;gap:6px;max-width:220px;z-index:500;`;
+  const rect = e.target.getBoundingClientRect();
+  picker.style.top = (rect.bottom + 6) + 'px';
+  picker.style.left = rect.left + 'px';
+  emojis.forEach(em => {
+    const sp = document.createElement('span');
+    sp.textContent = em;
+    sp.style.cssText = 'cursor:pointer;font-size:20px;padding:4px;border-radius:6px;';
+    sp.onmouseenter = () => sp.style.background = 'rgba(255,255,255,0.1)';
+    sp.onmouseleave = () => sp.style.background = '';
+    sp.onclick = () => {
+      const cat = state.categories.find(c => c.id === catId);
+      if (cat) {
+        cat.emoji = em;
+        const sec = document.getElementById('sec-' + catId);
+        if (sec) sec.querySelector('.section-emoji').textContent = em;
+        scheduleSave();
+      }
+      document.body.removeChild(picker);
+    };
+    picker.appendChild(sp);
+  });
+  document.body.appendChild(picker);
+  setTimeout(() => document.addEventListener('click', () => { if (document.body.contains(picker)) document.body.removeChild(picker); }, { once: true }), 50);
+}
+
+// ── ADD CATEGORY MODAL ──
 function openAddCat() {
   document.getElementById('cat-modal').classList.add('open');
   document.getElementById('new-cat-name').value = '';
   document.getElementById('new-cat-name').focus();
+  selectedEmoji = '🎈';
+  document.querySelectorAll('.emoji-opt').forEach(el => el.classList.remove('selected'));
+  document.querySelector('.emoji-opt[data-emoji="🎈"]').classList.add('selected');
 }
 function closeModal() {
   document.getElementById('cat-modal').classList.remove('open');
@@ -711,16 +909,20 @@ function addCategory() {
   const name = document.getElementById('new-cat-name').value.trim();
   if (!name) return;
   const id = 'cat' + (nextId++);
-  data.categories.push({ id, emoji: selectedEmoji, name, items: [] });
+  state.categories.push({ id, emoji: selectedEmoji, name, items: [] });
   closeModal();
   render();
+  saveState();
   toast('Category "' + name + '" added ✓');
 }
+document.getElementById('cat-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
 
-// EXPORT CSV
+// ── CSV EXPORT ──
 function exportCSV() {
   let csv = 'Category,Item,Est Low,Est High,Actual,Notes\n';
-  data.categories.forEach(cat => {
+  state.categories.forEach(cat => {
     cat.items.forEach(item => {
       csv += `"${cat.name}","${item.name}",${item.estLow},${item.estHigh},"${item.actual}","${item.notes}"\n`;
     });
@@ -728,12 +930,12 @@ function exportCSV() {
   const blob = new Blob([csv], { type: 'text/csv' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'party_budget.csv';
+  a.download = (state.title || 'party') + '_budget.csv';
   a.click();
   toast('CSV exported ✓');
 }
 
-// TOAST
+// ── TOAST ──
 function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
@@ -741,13 +943,8 @@ function toast(msg) {
   setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-// Close modal on overlay click
-document.getElementById('cat-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
-
-// INIT
-render();
+// ── BOOT ──
+init();
 </script>
 </body>
 </html>
