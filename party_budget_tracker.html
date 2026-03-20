@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎉 Party Budget Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0a1e;
+    --surface: #1a1230;
+    --surface2: #231848;
+    --border: rgba(255,200,80,0.15);
+    --gold: #f5c842;
+    --gold2: #e8a020;
+    --rose: #ff6b9d;
+    --teal: #4ecdc4;
+    --purple: #a855f7;
+    --text: #f0e6ff;
+    --muted: #9985bb;
+    --green: #4ade80;
+    --red: #f87171;
+    --over: #ff4444;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 60px;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #1a0f3c 0%, #2d1b69 50%, #1a0f3c 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 24px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(245,200,66,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(168,85,247,0.08) 0%, transparent 60%);
+  }
+  .header-inner {
+    max-width: 900px; margin: 0 auto; position: relative;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+  .header-left h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(245,200,66,0.3);
+    letter-spacing: -0.5px;
+  }
+  .header-left p {
+    color: var(--muted); font-size: 13px; margin-top: 4px; font-weight: 400;
+  }
+  .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    transition: all 0.18s; display: flex; align-items: center; gap: 6px;
+  }
+  .btn-gold { background: var(--gold); color: #1a0f3c; }
+  .btn-gold:hover { background: #ffd54f; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,200,66,0.3); }
+  .btn-outline {
+    background: transparent; color: var(--muted); border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* SUMMARY CARDS */
+  .summary-wrap {
+    max-width: 900px; margin: 0 auto; padding: 28px 16px 0;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 16px;
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .card.budget::before { background: linear-gradient(90deg, var(--gold), var(--gold2)); }
+  .card.spent::before { background: linear-gradient(90deg, var(--rose), var(--purple)); }
+  .card.remaining::before { background: linear-gradient(90deg, var(--teal), #22d3ee); }
+  .card.items::before { background: linear-gradient(90deg, var(--purple), var(--rose)); }
+  .card-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .card-value { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; margin-top: 6px; }
+  .card.budget .card-value { color: var(--gold); }
+  .card.spent .card-value { color: var(--rose); }
+  .card.remaining .card-value { color: var(--teal); }
+  .card.items .card-value { color: var(--purple); }
+  .card-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    max-width: 900px; margin: 20px auto 0; padding: 0 16px;
+  }
+  .progress-label {
+    display: flex; justify-content: space-between; font-size: 12px; color: var(--muted);
+    margin-bottom: 8px; font-weight: 500;
+  }
+  .progress-bar {
+    height: 8px; background: var(--surface2); border-radius: 99px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 99px;
+    background: linear-gradient(90deg, var(--gold), var(--rose));
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    min-width: 0;
+  }
+  .progress-fill.over { background: linear-gradient(90deg, var(--red), var(--over)); }
+
+  /* BUDGET LIMIT EDITOR */
+  .budget-edit-wrap {
+    max-width: 900px; margin: 14px auto 0; padding: 0 16px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .budget-edit-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .budget-edit-row { display: flex; gap: 8px; align-items: center; }
+  .budget-input {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--gold); padding: 7px 12px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; width: 100px; font-family: 'DM Sans', sans-serif;
+  }
+  .budget-input:focus { outline: none; border-color: var(--gold); }
+
+  /* SECTIONS */
+  .sections-wrap {
+    max-width: 900px; margin: 24px auto 0; padding: 0 16px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; cursor: pointer; user-select: none;
+    border-bottom: 1px solid transparent;
+    transition: background 0.15s;
+  }
+  .section-header:hover { background: rgba(255,255,255,0.03); }
+  .section.open .section-header { border-bottom-color: var(--border); }
+  .section-left { display: flex; align-items: center; gap: 12px; }
+  .section-emoji { font-size: 20px; }
+  .section-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700; font-size: 16px; color: var(--text);
+  }
+  .section-badge {
+    font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 99px;
+    background: rgba(245,200,66,0.15); color: var(--gold);
+  }
+  .section-badge.over { background: rgba(248,113,113,0.15); color: var(--red); }
+  .section-right { display: flex; align-items: center; gap: 14px; }
+  .section-totals { text-align: right; }
+  .section-totals span { display: block; font-size: 12px; color: var(--muted); }
+  .section-totals strong { font-size: 14px; color: var(--gold); }
+  .chevron { color: var(--muted); transition: transform 0.25s; font-size: 12px; }
+  .section.open .chevron { transform: rotate(180deg); }
+
+  /* TABLE */
+  .section-body { display: none; padding: 14px 18px 18px; }
+  .section.open .section-body { display: block; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left; font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px; padding: 0 10px 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  thead th:last-child { padding-right: 0; }
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
+  tbody tr:last-child { border-bottom: none; }
+  td { padding: 10px 10px 10px 0; vertical-align: middle; font-size: 13px; }
+  td:last-child { padding-right: 0; }
+
+  .item-name-cell { min-width: 120px; }
+  .item-name {
+    font-weight: 500; color: var(--text); cursor: text;
+    padding: 4px 6px; border-radius: 5px; border: 1px solid transparent;
+    transition: border 0.15s; display: inline-block; min-width: 80px;
+  }
+  .item-name:hover { border-color: var(--border); background: var(--surface2); }
+  .item-name:focus { outline: none; border-color: var(--gold); background: var(--surface2); }
+
+  .cell-input {
+    background: transparent; border: 1px solid transparent; color: var(--text);
+    font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 4px 6px;
+    border-radius: 5px; width: 90px; transition: border 0.15s;
+  }
+  .cell-input:hover { border-color: var(--border); background: var(--surface2); }
+  .cell-input:focus { outline: none; border-color: var(--gold); background: var(--surface2); }
+  .cell-input.actual-input { color: var(--green); font-weight: 600; }
+  .cell-input.actual-input:focus { color: var(--green); }
+
+  .notes-input {
+    background: transparent; border: 1px solid transparent; color: var(--muted);
+    font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 4px 6px;
+    border-radius: 5px; width: 120px; transition: border 0.15s;
+  }
+  .notes-input:hover { border-color: var(--border); background: var(--surface2); }
+  .notes-input:focus { outline: none; border-color: var(--purple); background: var(--surface2); color: var(--text); }
+
+  .range-display { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  .diff-cell { font-size: 12px; font-weight: 600; }
+  .diff-cell.under { color: var(--green); }
+  .diff-cell.over { color: var(--red); }
+  .diff-cell.exact { color: var(--muted); }
+
+  .row-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+  tbody tr:hover .row-actions { opacity: 1; }
+  .icon-btn {
+    background: none; border: none; cursor: pointer; padding: 3px 5px;
+    border-radius: 4px; font-size: 12px; transition: background 0.15s;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.08); }
+  .icon-btn.del:hover { background: rgba(248,113,113,0.15); }
+
+  /* ADD ROW */
+  .add-row-btn {
+    display: flex; align-items: center; gap: 6px; padding: 8px 6px;
+    color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1px dashed transparent; border-radius: 7px; margin-top: 10px;
+    transition: all 0.15s; width: 100%; background: none;
+  }
+  .add-row-btn:hover { border-color: var(--border); color: var(--gold); background: rgba(245,200,66,0.04); }
+
+  /* ADD CATEGORY */
+  .add-cat-wrap {
+    max-width: 900px; margin: 16px auto 0; padding: 0 16px;
+  }
+  .add-cat-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 14px; border-radius: 14px;
+    border: 1px dashed rgba(255,200,80,0.2); background: rgba(245,200,66,0.03);
+    color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: all 0.18s; font-family: 'DM Sans', sans-serif;
+  }
+  .add-cat-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(245,200,66,0.07); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 100; align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px; width: 100%; max-width: 420px;
+  }
+  .modal h2 { font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 20px; font-size: 20px; }
+  .form-row { margin-bottom: 14px; }
+  .form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; display: block; }
+  .form-input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 14px; border-radius: 8px; font-size: 14px;
+    font-family: 'DM Sans', sans-serif; transition: border 0.15s;
+  }
+  .form-input:focus { outline: none; border-color: var(--gold); }
+  .emoji-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .emoji-opt {
+    padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface2); cursor: pointer; font-size: 18px;
+    transition: all 0.15s;
+  }
+  .emoji-opt.selected { border-color: var(--gold); background: rgba(245,200,66,0.1); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 20px; border-radius: 99px;
+    font-size: 13px; font-weight: 500; z-index: 200;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .section-name-input {
+    font-family: 'Playfair Display', serif; font-weight: 700;
+    font-size: 16px; color: var(--text); background: transparent;
+    border: 1px solid transparent; border-radius: 5px; padding: 2px 6px;
+    width: 160px; cursor: text; transition: border 0.15s;
+  }
+  .section-name-input:hover { border-color: var(--border); background: var(--surface2); }
+  .section-name-input:focus { outline: none; border-color: var(--gold); background: var(--surface2); }
+
+  @media (max-width: 600px) {
+    .notes-input { display: none; }
+    .cell-input { width: 70px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <h1>🎉 Party Budget Tracker</h1>
+      <p id="party-subtitle">30th Anniversary Celebration — Edit any field to update live</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="btn btn-gold" onclick="openAddCat()">+ Category</button>
+    </div>
+  </div>
+</div>
+
+<div class="summary-wrap">
+  <div class="card budget">
+    <div class="card-label">Total Budget</div>
+    <div class="card-value" id="total-budget-display">$0</div>
+    <div class="card-sub">Set your limit below</div>
+  </div>
+  <div class="card spent">
+    <div class="card-label">Actual Spent</div>
+    <div class="card-value" id="total-actual">$0</div>
+    <div class="card-sub">Confirmed costs</div>
+  </div>
+  <div class="card remaining">
+    <div class="card-label">Remaining</div>
+    <div class="card-value" id="total-remaining">$0</div>
+    <div class="card-sub">Budget left</div>
+  </div>
+  <div class="card items">
+    <div class="card-label">Est. Total</div>
+    <div class="card-value" id="total-est">$0</div>
+    <div class="card-sub">Estimated cost</div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span>Budget Usage</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+</div>
+
+<div class="budget-edit-wrap">
+  <span class="budget-edit-label">🎯 Total Budget Cap:</span>
+  <div class="budget-edit-row">
+    <input type="number" class="budget-input" id="budget-cap" value="2000" onchange="refreshSummary()">
+    <button class="btn btn-outline" onclick="refreshSummary()" style="padding:7px 12px;">Update</button>
+  </div>
+</div>
+
+<div class="sections-wrap" id="sections-wrap"></div>
+
+<div class="add-cat-wrap">
+  <button class="add-cat-btn" onclick="openAddCat()">＋ Add New Category</button>
+</div>
+
+<!-- ADD CATEGORY MODAL -->
+<div class="modal-overlay" id="cat-modal">
+  <div class="modal">
+    <h2>Add Category</h2>
+    <div class="form-row">
+      <label class="form-label">Category Name</label>
+      <input type="text" class="form-input" id="new-cat-name" placeholder="e.g. Photography">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Icon</label>
+      <div class="emoji-picker">
+        <span class="emoji-opt selected" data-emoji="🎈">🎈</span>
+        <span class="emoji-opt" data-emoji="🎵">🎵</span>
+        <span class="emoji-opt" data-emoji="🌸">🌸</span>
+        <span class="emoji-opt" data-emoji="📸">📸</span>
+        <span class="emoji-opt" data-emoji="🚗">🚗</span>
+        <span class="emoji-opt" data-emoji="🎁">🎁</span>
+        <span class="emoji-opt" data-emoji="✨">✨</span>
+        <span class="emoji-opt" data-emoji="🧾">🧾</span>
+        <span class="emoji-opt" data-emoji="🍹">🍹</span>
+        <span class="emoji-opt" data-emoji="💐">💐</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" onclick="addCategory()">Add</button>
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let data = {
+  categories: [
+    {
+      id: 'food', emoji: '🍛', name: 'Food (Catering)',
+      items: [
+        { id: 'i1', name: 'Indian Food Catering', estLow: 800, estHigh: 1050, actual: '', notes: '2 apps, 2 mains, dal, rice, naan, dessert' },
+        { id: 'i2', name: 'Serving Trays', estLow: 10, estHigh: 20, actual: '', notes: 'Foil trays backup' },
+      ]
+    },
+    {
+      id: 'cake', emoji: '🎂', name: 'Cake',
+      items: [
+        { id: 'i3', name: 'Eggless Cake (50-60 servings)', estLow: 200, estHigh: 300, actual: '', notes: '' },
+        { id: 'i4', name: 'Cake Topper "30 years"', estLow: 10, estHigh: 15, actual: '', notes: 'Optional' },
+      ]
+    },
+    {
+      id: 'rentals', emoji: '🏕️', name: 'Rentals',
+      items: [
+        { id: 'i5', name: 'Tent (15x20 or 20x20)', estLow: 450, estHigh: 575, actual: '', notes: 'Weather + seating zone' },
+        { id: 'i6', name: 'Chairs (35–45)', estLow: 70, estHigh: 100, actual: '', notes: '' },
+        { id: 'i7', name: 'Tables (4–6)', estLow: 40, estHigh: 80, actual: '', notes: '' },
+        { id: 'i8', name: 'String Lighting', estLow: 25, estHigh: 25, actual: '', notes: 'If not included' },
+      ]
+    },
+    {
+      id: 'decor', emoji: '✨', name: 'Decor',
+      items: [
+        { id: 'i9', name: 'Backdrop Stand', estLow: 20, estHigh: 30, actual: '', notes: '6–6.6 ft' },
+        { id: 'i10', name: 'Backdrop Banner', estLow: 10, estHigh: 20, actual: '', notes: 'Anniversary' },
+        { id: 'i11', name: 'Gold Shimmer Curtain', estLow: 10, estHigh: 15, actual: '', notes: 'Backdrop' },
+        { id: 'i12', name: 'Curtain Lights (warm)', estLow: 10, estHigh: 20, actual: '', notes: 'Backdrop/fence' },
+        { id: 'i13', name: 'Marigold Garlands', estLow: 15, estHigh: 25, actual: '', notes: 'Indian touch' },
+        { id: 'i14', name: 'Outdoor String Lights', estLow: 30, estHigh: 60, actual: '', notes: 'Main lighting' },
+      ]
+    },
+    {
+      id: 'supplies', emoji: '🍽️', name: 'Party Supplies',
+      items: [
+        { id: 'i15', name: 'Plates (heavy duty ~60 ppl)', estLow: 20, estHigh: 30, actual: '', notes: '' },
+        { id: 'i16', name: 'Bowls (for curry)', estLow: 10, estHigh: 20, actual: '', notes: '' },
+        { id: 'i17', name: 'Napkins (bulk)', estLow: 10, estHigh: 10, actual: '', notes: '' },
+        { id: 'i18', name: 'Cutlery (forks/spoons)', estLow: 15, estHigh: 20, actual: '', notes: '' },
+        { id: 'i19', name: 'Cups (water + soda)', estLow: 10, estHigh: 20, actual: '', notes: '' },
+        { id: 'i20', name: 'Serving Spoons/Tongs', estLow: 10, estHigh: 20, actual: '', notes: '' },
+        { id: 'i21', name: 'Trash Bags', estLow: 10, estHigh: 10, actual: '', notes: 'Cleanup' },
+        { id: 'i22', name: 'Paper Towels', estLow: 10, estHigh: 10, actual: '', notes: 'Cleaning' },
+      ]
+    },
+    {
+      id: 'drinks', emoji: '🧊', name: 'Drinks + Ice',
+      items: [
+        { id: 'i23', name: 'Water Bottles (bulk)', estLow: 15, estHigh: 25, actual: '', notes: '' },
+        { id: 'i24', name: 'Soda / Juice variety', estLow: 30, estHigh: 50, actual: '', notes: '' },
+        { id: 'i25', name: 'Ice (coolers)', estLow: 10, estHigh: 20, actual: '', notes: '' },
+        { id: 'i26', name: 'Coolers', estLow: 0, estHigh: 50, actual: '', notes: 'Borrow or buy' },
+      ]
+    },
+    {
+      id: 'sound', emoji: '🔊', name: 'Sound (Optional)',
+      items: [
+        { id: 'i27', name: 'Speaker', estLow: 0, estHigh: 50, actual: '', notes: 'Try to borrow → $0' },
+        { id: 'i28', name: 'Mic', estLow: 0, estHigh: 50, actual: '', notes: 'Only if needed' },
+      ]
+    },
+    {
+      id: 'misc', emoji: '🧾', name: 'Misc / Buffer',
+      items: [
+        { id: 'i29', name: 'Last-minute runs', estLow: 100, estHigh: 200, actual: '', notes: 'Target/Costco' },
+      ]
+    },
+  ]
+};
+
+let nextId = 100;
+const fmt = v => v === '' || v === null || v === undefined ? '—' : '$' + Number(v).toLocaleString();
+const fmtNum = v => v === '' || isNaN(v) ? 0 : Number(v);
+
+function render() {
+  const wrap = document.getElementById('sections-wrap');
+  wrap.innerHTML = '';
+  data.categories.forEach(cat => {
+    wrap.appendChild(buildSection(cat));
+  });
+  refreshSummary();
+}
+
+function buildSection(cat) {
+  const div = document.createElement('div');
+  div.className = 'section open';
+  div.id = 'sec-' + cat.id;
+
+  const totals = getCatTotals(cat);
+
+  div.innerHTML = `
+    <div class="section-header" onclick="toggleSection('${cat.id}')">
+      <div class="section-left">
+        <span class="section-emoji">${cat.emoji}</span>
+        <input class="section-name-input" value="${cat.name}" onclick="e=>e.stopPropagation()"
+          onchange="updateCatName('${cat.id}', this.value)" onfocus="this.parentElement.parentElement.parentElement.querySelector('.section-header').onclick=null"
+          onblur="reattachToggle('${cat.id}')">
+        <span class="section-badge ${totals.over ? 'over' : ''}">
+          ${totals.actual > 0 ? fmt(totals.actual) + ' spent' : 'Est. ' + fmt(totals.estLow) + '–' + fmt(totals.estHigh)}
+        </span>
+      </div>
+      <div class="section-right">
+        <div class="section-totals">
+          <span>${cat.items.length} items</span>
+        </div>
+        <span class="chevron">▼</span>
+        <button class="icon-btn del" onclick="event.stopPropagation();deleteCategory('${cat.id}')" title="Remove category">🗑</button>
+      </div>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Est. Range</th>
+            <th>Actual $</th>
+            <th>Diff</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody-${cat.id}">
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addItem('${cat.id}')">＋ Add item</button>
+    </div>
+  `;
+
+  const tbody = div.querySelector('#tbody-' + cat.id);
+  cat.items.forEach(item => {
+    tbody.appendChild(buildRow(cat.id, item));
+  });
+
+  return div;
+}
+
+function reattachToggle(catId) {
+  const sec = document.getElementById('sec-' + catId);
+  if (sec) sec.querySelector('.section-header').onclick = () => toggleSection(catId);
+}
+
+function buildRow(catId, item) {
+  const tr = document.createElement('tr');
+  const midEst = item.estLow === item.estHigh ? item.estLow : Math.round((item.estLow + item.estHigh) / 2);
+  const actual = fmtNum(item.actual);
+  const diff = item.actual !== '' ? actual - midEst : null;
+  const diffHtml = diff !== null
+    ? `<span class="diff-cell ${diff < 0 ? 'under' : diff > 0 ? 'over' : 'exact'}">${diff < 0 ? '▼ ' + fmt(Math.abs(diff)) : diff > 0 ? '▲ ' + fmt(diff) : '—'}</span>`
+    : '<span class="diff-cell exact">—</span>';
+
+  tr.innerHTML = `
+    <td class="item-name-cell">
+      <span class="item-name" contenteditable="true"
+        onblur="updateItem('${catId}','${item.id}','name',this.innerText)"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${item.name}</span>
+    </td>
+    <td>
+      <span class="range-display">
+        $<input type="number" class="cell-input" style="width:58px" value="${item.estLow}"
+          onchange="updateItem('${catId}','${item.id}','estLow',this.value)">
+        –
+        $<input type="number" class="cell-input" style="width:58px" value="${item.estHigh}"
+          onchange="updateItem('${catId}','${item.id}','estHigh',this.value)">
+      </span>
+    </td>
+    <td>
+      <input type="number" class="cell-input actual-input" placeholder="—"
+        value="${item.actual}"
+        onchange="updateItem('${catId}','${item.id}','actual',this.value)">
+    </td>
+    <td>${diffHtml}</td>
+    <td>
+      <input type="text" class="notes-input" placeholder="Notes..."
+        value="${item.notes}"
+        onchange="updateItem('${catId}','${item.id}','notes',this.value)">
+    </td>
+    <td>
+      <div class="row-actions">
+        <button class="icon-btn del" onclick="deleteItem('${catId}','${item.id}')" title="Delete">✕</button>
+      </div>
+    </td>
+  `;
+  return tr;
+}
+
+function getCatTotals(cat) {
+  let estLow = 0, estHigh = 0, actual = 0;
+  cat.items.forEach(item => {
+    estLow += fmtNum(item.estLow);
+    estHigh += fmtNum(item.estHigh);
+    if (item.actual !== '') actual += fmtNum(item.actual);
+  });
+  const midEst = Math.round((estLow + estHigh) / 2);
+  return { estLow, estHigh, actual, over: actual > estHigh && actual > 0 };
+}
+
+function refreshSummary() {
+  let totalEstLow = 0, totalEstHigh = 0, totalActual = 0;
+  data.categories.forEach(cat => {
+    const t = getCatTotals(cat);
+    totalEstLow += t.estLow;
+    totalEstHigh += t.estHigh;
+    totalActual += t.actual;
+  });
+
+  const cap = fmtNum(document.getElementById('budget-cap').value) || 2000;
+  const remaining = cap - totalActual;
+  const midEst = Math.round((totalEstLow + totalEstHigh) / 2);
+  const pct = cap > 0 ? Math.min(Math.round(totalActual / cap * 100), 100) : 0;
+
+  document.getElementById('total-budget-display').textContent = fmt(cap);
+  document.getElementById('total-actual').textContent = totalActual > 0 ? fmt(totalActual) : '$0';
+  document.getElementById('total-remaining').textContent = fmt(remaining);
+  document.getElementById('total-est').textContent = fmt(totalEstLow) + '–' + fmt(totalEstHigh);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-fill').className = 'progress-fill' + (remaining < 0 ? ' over' : '');
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  const remEl = document.getElementById('total-remaining');
+  remEl.style.color = remaining < 0 ? 'var(--red)' : 'var(--teal)';
+}
+
+function toggleSection(catId) {
+  const sec = document.getElementById('sec-' + catId);
+  if (sec) sec.classList.toggle('open');
+}
+
+function updateCatName(catId, val) {
+  const cat = data.categories.find(c => c.id === catId);
+  if (cat) cat.name = val;
+}
+
+function updateItem(catId, itemId, field, value) {
+  const cat = data.categories.find(c => c.id === catId);
+  if (!cat) return;
+  const item = cat.items.find(i => i.id === itemId);
+  if (!item) return;
+  item[field] = field === 'name' || field === 'notes' ? value : value;
+  // Re-render just the section badge + summary
+  const sec = document.getElementById('sec-' + catId);
+  if (sec) {
+    const totals = getCatTotals(cat);
+    const badge = sec.querySelector('.section-badge');
+    if (badge) {
+      badge.className = 'section-badge' + (totals.over ? ' over' : '');
+      badge.textContent = totals.actual > 0
+        ? fmt(totals.actual) + ' spent'
+        : 'Est. ' + fmt(totals.estLow) + '–' + fmt(totals.estHigh);
+    }
+  }
+  refreshSummary();
+}
+
+function addItem(catId) {
+  const cat = data.categories.find(c => c.id === catId);
+  if (!cat) return;
+  const newItem = { id: 'i' + (nextId++), name: 'New Item', estLow: 0, estHigh: 0, actual: '', notes: '' };
+  cat.items.push(newItem);
+  const tbody = document.getElementById('tbody-' + catId);
+  if (tbody) tbody.appendChild(buildRow(catId, newItem));
+  refreshSummary();
+  toast('Item added ✓');
+}
+
+function deleteItem(catId, itemId) {
+  const cat = data.categories.find(c => c.id === catId);
+  if (!cat) return;
+  cat.items = cat.items.filter(i => i.id !== itemId);
+  const tbody = document.getElementById('tbody-' + catId);
+  if (tbody) {
+    // Find and remove the row
+    const rows = tbody.querySelectorAll('tr');
+    rows.forEach(row => {
+      if (row.innerHTML.includes(`'${itemId}'`)) row.remove();
+    });
+  }
+  refreshSummary();
+}
+
+function deleteCategory(catId) {
+  if (!confirm('Remove this category?')) return;
+  data.categories = data.categories.filter(c => c.id !== catId);
+  const sec = document.getElementById('sec-' + catId);
+  if (sec) sec.remove();
+  refreshSummary();
+  toast('Category removed');
+}
+
+// ADD CATEGORY
+let selectedEmoji = '🎈';
+function openAddCat() {
+  document.getElementById('cat-modal').classList.add('open');
+  document.getElementById('new-cat-name').value = '';
+  document.getElementById('new-cat-name').focus();
+}
+function closeModal() {
+  document.getElementById('cat-modal').classList.remove('open');
+}
+document.querySelectorAll('.emoji-opt').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.emoji-opt').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedEmoji = el.dataset.emoji;
+  });
+});
+function addCategory() {
+  const name = document.getElementById('new-cat-name').value.trim();
+  if (!name) return;
+  const id = 'cat' + (nextId++);
+  data.categories.push({ id, emoji: selectedEmoji, name, items: [] });
+  closeModal();
+  render();
+  toast('Category "' + name + '" added ✓');
+}
+
+// EXPORT CSV
+function exportCSV() {
+  let csv = 'Category,Item,Est Low,Est High,Actual,Notes\n';
+  data.categories.forEach(cat => {
+    cat.items.forEach(item => {
+      csv += `"${cat.name}","${item.name}",${item.estLow},${item.estHigh},"${item.actual}","${item.notes}"\n`;
+    });
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'party_budget.csv';
+  a.click();
+  toast('CSV exported ✓');
+}
+
+// TOAST
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// Close modal on overlay click
+document.getElementById('cat-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// INIT
+render();
+</script>
+</body>
+</html>
