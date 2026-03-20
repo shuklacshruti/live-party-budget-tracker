@@ -5,7 +5,7 @@ Live editing:
 
 Click any item name to rename it inline
 Type directly into Est Low / Est High fields as quotes come in
-Fill in the Actual $ column once you confirm a vendor — the tracker auto-calculates over/under budget
+Fill in the Actual $ column once you confirm a vendor, the tracker auto-calculates over/under budget
 Edit category names right in the header
 
 Tracking:
